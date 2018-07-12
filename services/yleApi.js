@@ -1,34 +1,22 @@
-const Type = Object.freeze({
-  PROGRAM: "program",
-  CLIP: "clip",
-  TVCONTENT: "tvcontent",
-  TVPROGRAM: "tvprogram",
-  TVCLIP: "tvclip",
-  RADIOCONTENT: "radiocontent",
-  RADIOPROGRAM: "radioprogram",
-  RADIOCLIP: "radioclip"
-})
+const apiConnector = require('./yleConnector')
+const yq = require('./yleQuerys')
 
-const Order = Object.freeze({
-  PLAYCOUNT_6H_ASC: "playcount.6h:asc",
-  PLAYCOUNT_6H_DESC: "playcount.6h:desc",
-  PLAYCOUNT_24H_ASC: "playcount.24h:asc",
-  PLAYCOUNT_24H_DESC: "playcount.24h:desc",
-  PLAYCOUNT_WEEK_ASC: "playcount.week:asc",
-  PLAYCOUNT_WEEK_DESC: "playcount.week:desc",
-  PLAYCOUNT_MONTH_ASC: "playcount.month:asc",
-  PLAYCOUNT_MONTH_DESC: "playcount.month:desc",
-  PUBLICATION_STARTTIME_ASC: "publication.starttime:asc",
-  PUBLICATION_STARTTIME_DESC: "publication.starttime:desc",
-  PUBLICATION_ENDTIME_ASC: "publication.endtime:asc",
-  PUBLICATION_ENDTIME_DESC: "publication.endtime:desc",
-  UPDATED_ASC: "updated:asc",
-  UPDATED_DESC: "updated:desc"
-})
+const getCategories = async () => {
+  const categories = await apiConnector.getCategories()
+  return categories
+}
 
-const Availability = Object.freeze({
-  ONDEMAND: "ondemand",
-  FUTURE_ONDEMAND: "future-ondemand",
-  FUTURE_SCHEDULED: "future-scheduled",
-  IN_FUTURE: "in-future"
-})
+const getItemWithId = async (id) => {
+  const response = await apiConnector.getItems({ id })
+  return response
+}
+
+const getItems = async (queryData) => {
+  queryData = queryData[yq.Mediaobject.NAME] ? queryData : { ...queryData, [yq.Mediaobject.NAME]: yq.Mediaobject.VALUES.VIDEO }
+  queryData = queryData[yq.Availability.NAME] ? queryData : { ...queryData, [yq.Availability.NAME]: yq.Availability.VALUES.ONDEMAND }
+  queryData = queryData[yq.Order.NAME] ? queryData : { ...queryData, [yq.Order.NAME]: yq.Order.VALUES.PUBLICATION_STARTTIME_DESC }
+  const response = await apiConnector.getItems(queryData)
+  return response
+}
+
+module.exports = { getCategories, getItemWithId, getItems }
