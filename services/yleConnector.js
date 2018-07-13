@@ -1,11 +1,15 @@
 const axios = require('axios')
+const { cacheAdapterEnhancer, throttleAdapterEnhancer } =require('axios-extensions')
 const querystring = require('querystring')
 
 const config = require('../utils/config')
-const baseUrl = `${config.yleUrl}/programs/items.json`
+const baseUrl = `${config.yleUrl}`
 const yquery = require('./yleQuerys')
 
-
+const http = axios.create({
+  headers: { 'Cache-Control': 'no-cache' },
+	adapter: throttleAdapterEnhancer(cacheAdapterEnhancer(axios.defaults.adapter), {threshold: 10})
+})
 
 
 const getItems = async (queryData) => {
@@ -13,28 +17,12 @@ const getItems = async (queryData) => {
   
 
   const query = querystring.stringify(queryData)
-  const url = `https://external.api.yle.fi/v1/programs/items.json?${query}&${config.yleKey}`
-  console.log({ query })
-  console.log({ url })
-  const response = await axios.get(url)
+  //const url = `https://external.api.yle.fi/v1/programs/items.json?${query}&${config.yleKey}`
+  const url = `${baseUrl}/programs/items.json?${query}&${config.yleKey}`
+  //console.log({ query })
+  //console.log({ url })
+  const response = await http.get(url)
   return response.data.data
-}
-
-const getCategories3 = async (categories = []) => {
-   const url = `https://external.api.yle.fi/v1/programs/categories.json?scheme=areena-content-classification&offset=${categories.length}&${config.yleKey}`
-  // const url = `https://external.api.yle.fi/v1/programs/categories.json?offset=${categories.length}&${config.yleKey}`
-  
-  const response = await axios.get(url)
-  const count = response.data.meta.count
-  const limit = response.data.meta.limit
-  console.log('length', categories.length)
-  console.log('count', count)
-
-  if (categories.length < count) {
-    return await getCategories(categories.concat(response.data.data))
-  } else {
-    return categories
-  }
 }
 
 const getCategories = async () =>{
@@ -45,10 +33,10 @@ const getCategories = async () =>{
 
 const getCategoriesWithScheme = async (categories = [], scheme) => {
   const url = `https://external.api.yle.fi/v1/programs/categories.json?scheme=${scheme}&offset=${categories.length}&${config.yleKey}`
-  const response = await axios.get(url)
+  const response = await http.get(url)
   const count = response.data.meta.count  
 
-  console.log(categories.length)
+  console.log('inscheme: ', scheme,'length: ',categories.length)
 
   if (categories.length < count) {
     return await getCategoriesWithScheme(categories.concat(response.data.data), scheme)

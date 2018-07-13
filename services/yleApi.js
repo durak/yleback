@@ -12,6 +12,8 @@ const getItemWithId = async (id) => {
 }
 
 const getItems = async (queryData) => {
+
+  // default settings: video & ondemand & newest first order
   queryData = queryData[yq.Mediaobject.NAME] ? queryData : { ...queryData, [yq.Mediaobject.NAME]: yq.Mediaobject.VALUES.VIDEO }
   queryData = queryData[yq.Availability.NAME] ? queryData : { ...queryData, [yq.Availability.NAME]: yq.Availability.VALUES.ONDEMAND }
   queryData = queryData[yq.Order.NAME] ? queryData : { ...queryData, [yq.Order.NAME]: yq.Order.VALUES.PUBLICATION_STARTTIME_DESC }

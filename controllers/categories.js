@@ -5,8 +5,14 @@ const Category = require('../models/category')
 categoriesRouter.get('/', async (request, response) => {
   try {
     const categories = await yleApi.getCategories()
+    const count = categories.filter((c) => c.id === '5-217')
+    console.log('iidee on5-127 count', count.length)
+    console.log('categories length', categories.length)
     const sorted = sortNodes(categories)
-    console.log(sorted.length)
+    console.log('trees', sorted.length)
+    console.log('tv children: ', sorted[0].children.length)
+    console.log('radio 2 children 2 children: ', sorted[1].children[2].children.length)
+    console.log('analyitcs children: ', sorted[2].children.length)
 
     return response.json(sorted)
   } catch (exception) {

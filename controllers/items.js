@@ -27,7 +27,7 @@ itemsRouter.get('/:id', idSchema, async (request, response) => {
     const item = await yleApi.getItemWithId(request.params.id)
     
     const p = new Program(item[0])
-    console.log(p)
+    
 
 
     return response.json(p)
