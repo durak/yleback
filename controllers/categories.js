@@ -1,36 +1,79 @@
 const categoriesRouter = require('express').Router()
 const yleApi = require('../services/yleApi')
+const Category = require('../models/category')
 
 categoriesRouter.get('/', async (request, response) => {
   try {
     const categories = await yleApi.getCategories()
-    //console.log(categories)
-    //sort(categories)
-    console.log('length', categories.length)
-    return response.json(categories)
+    const sorted = sortNodes(categories)
+    console.log(sorted.length)
+
+    return response.json(sorted)
   } catch (exception) {
     console.log(exception)
   }
 
 })
 
-const sort = (categories) => {
-  const parents = categories.map((category) => category.broader ? category.broader.id : undefined )
-  //const parents = categories.map((category) => category.broader.id)
-  const unique = parents.filter((value, index, self) => value && self.indexOf(value) === index)
-  const parentCategories = categories.filter((category) => unique.includes(category.id))
-  
-  console.log(unique)
-  
-  categories.forEach(element => {
-    if (element.broader) {
-    let c = parentCategories.find((value) => value.id === element.broader.id)
-    if (!c.children) c.children = []
-      c.children.push(element.id)
-
+/**
+ * Recursive search for parent node of category
+ * @param {*} node 
+ * @param {*} category 
+ */
+const findParent = (node, category) => {
+  if (node.id === category.broader) {
+    return node
+  } else if (node.children) {    
+    let result = null
+    for (let i = 0; result === null && i < node.children.length; i++) {
+      result = findParent(node.children[i], category)
     }
-  });
-  console.log(parentCategories)
+    return result
+  }
+  return null
+}
+
+/**
+ * Sort categories to tree view
+ * @param {*} categories 
+ */
+const sortNodes = (categories) => {
+  let trees = []
+  categories.forEach((c, currentIndex, self) => {
+    
+    const category = new Category(c)
+
+    // root categories
+    if (!category.broader) {
+      category.children = []
+      trees.push(category)
+    } else {
+
+      let parent = null
+
+      // find parent recursively from previous 
+      for (let i = 0; parent === null && i < trees.length; i++) {
+        parent = findParent(trees[i], category)
+      }
+
+      // parent was not found => must be after current category in the array
+      if (parent === null) {
+        for (let j = currentIndex; parent === null && j < self.length; j++) {
+          if (self[j].id === category.broader) {
+            parent = self[j]
+          }
+        }
+      }
+
+      if (!parent.children) {
+        parent.children = []
+      }
+      parent.children.push(category)
+    }
+  })
+
+  const [tv, radio, ...rest] = trees
+  return [tv, radio, { title: 'Analytics', children: rest }]
 }
 
 module.exports = categoriesRouter
