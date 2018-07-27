@@ -8,7 +8,7 @@ const yquery = require('./yleQuerys')
 
 const http = axios.create({
   headers: { 'Cache-Control': 'no-cache' },
-	adapter: throttleAdapterEnhancer(cacheAdapterEnhancer(axios.defaults.adapter), {threshold: 10})
+	adapter: throttleAdapterEnhancer(cacheAdapterEnhancer(axios.defaults.adapter), {threshold: 1000})
 })
 
 
@@ -20,8 +20,10 @@ const getItems = async (queryData) => {
   //const url = `https://external.api.yle.fi/v1/programs/items.json?${query}&${config.yleKey}`
   const url = `${baseUrl}/programs/items.json?${query}&${config.yleKey}`
   //console.log({ query })
-  //console.log({ url })
+  console.log({ url })
   const response = await http.get(url)
+
+  console.log(response.status)
   return response.data.data
 }
 

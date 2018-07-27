@@ -25,11 +25,8 @@ itemsRouter.get('/:id', idSchema, async (request, response) => {
     }
 
     const item = await yleApi.getItemWithId(request.params.id)
-    
     const p = new Program(item[0])
     
-
-
     return response.json(p)
   } catch (exception) {
     console.log(exception)
@@ -44,7 +41,7 @@ const qSchema = oneOf([
   query(ItemsQuery.TYPE.NAME).isIn(ItemsQuery.TYPE.validationValues()),
   query(ItemsQuery.Q.NAME).exists(),
   query(ItemsQuery.MEDIAOBJECT.NAME).isIn(ItemsQuery.MEDIAOBJECT.validationValues()),
-  query(ItemsQuery.CATEGORY.NAME).matches(/^([0-9]+-[0-9]+)(,[0-9]+-[0-9]+)*$/),
+  query(ItemsQuery.CATEGORY.NAME).matches(/^(-?[0-9]+-[0-9]+)(,-?[0-9]+-[0-9]+)*$/),
   query(ItemsQuery.SERIES.NAME).matches(/^([0-9]+-[0-9]+)(,[0-9]+-[0-9]+)*$/),
   query(ItemsQuery.AVAILABILITY.NAME).isIn(ItemsQuery.AVAILABILITY.validationValues()),
   query(ItemsQuery.ORDER.NAME).isIn(ItemsQuery.ORDER.validationValues()),

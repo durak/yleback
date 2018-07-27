@@ -1,8 +1,8 @@
 
 const Program = function (apidata) {
   this.id = apidata.id
-  this.description = apidata.description.fi
-  this.title = apidata.title.fi
+  this.description = apidata.description.fi ? apidata.description.fi : apidata.description.sv ? apidata.description.sv : 'no description available'
+  this.title = apidata.title.fi ? apidata.title.fi : apidata.title.sv ? apidata.title.sv : 'no title available'
   this.type = apidata.type
   this.image = apidata.image
   this.originalTitle = apidata.originalTitle.und
@@ -17,7 +17,11 @@ const Program = function (apidata) {
 
   if (apidata.partOfSeries) {
     this.episodeNumber = apidata.episodeNumber
-    this.partOfSeries = { id: apidata.partOfSeries.id, title: apidata.partOfSeries.title.fi }
+    this.partOfSeries = { 
+      id: apidata.partOfSeries.id, 
+      title: apidata.partOfSeries.title ? apidata.partOfSeries.title.fi : 'no title',
+      description: apidata.partOfSeries.description ? apidata.partOfSeries.description.fi : 'no description'
+    }
   }
 
   if (apidata.partOfSeason) {

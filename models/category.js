@@ -10,6 +10,8 @@ const Category = function (apidata) {
   if (apidata.children) {
     this.children = apidata.children
   }
+
+  //this.status = 'neutral'
 }
 
 
