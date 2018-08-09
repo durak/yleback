@@ -1,0 +1,20 @@
+{
+  "files": [
+    "build",
+    "controllers",
+    "models",
+    "services",
+    "utils",
+    "index.js",
+    "now.json",
+    "package-lock.json",
+    "package.json"
+  ],
+  "env": {
+    "YLE_API_URL": "https://external.api.yle.fi/v1",
+    "YLE_API_KEY": "@yle-api-key",
+    "PORT": "8080",
+    "LOGGER_LEVEL": "info"
+  },
+  "alias": "areenaminer.now.sh"
+}
